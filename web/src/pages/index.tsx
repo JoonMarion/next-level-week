@@ -8,6 +8,7 @@ import { api } from '../lib/axios';
 interface HomeProps {
     poolCount: number;
     guessCount: number;
+    userCount: number;
 }
 
 export default function Home(props: HomeProps) {
@@ -23,7 +24,7 @@ export default function Home(props: HomeProps) {
                 <div className="mt-10 flex items-center gap-2">
                     <Image src={userAvatarExampleImg} alt="" />
                     <strong className="text-gray-100 text-xl">
-                        <span className="text-ignite-500">+12.592</span> pessoas já estão usando
+                        <span className="text-ignite-500">+{props.userCount}</span> pessoas já estão usando
                     </strong>
                 </div>
 
@@ -58,8 +59,8 @@ export default function Home(props: HomeProps) {
                     <div className="flex items-center gap-6">
                         <Image src={iconCheckImg} alt="" />
                         <div className="flex flex-col">
-                            <span className="font-bold text-2xl">+{props.poolCount} </span>
-                            <span>Bolões criados</span>
+                            <span className="font-bold text-2xl">+{props.guessCount} </span>
+                            <span>Palpites enviados</span>
                         </div>
                     </div>
                 </div>
@@ -75,15 +76,21 @@ export default function Home(props: HomeProps) {
 }
 
 export const getServerSideProps = async () => {
-    const [poolCountResponse, guessCountResponse] = await Promise.all([
+    const [poolCountResponse, guessCountResponse, userCountResponse] = await Promise.all([
         api.get('pools/count'),
         api.get('guesses/count'),
+        api.get('users/count'),
     ]);
+
+    const poolResponse = poolCountResponse.data;
+    const guessResponse = guessCountResponse.data;
+    const userResponse = userCountResponse.data;
 
     return {
         props: {
-            poolCount: poolCountResponse?.data.count,
-            guessCount: guessCountResponse?.data.count,
+            poolCount: poolResponse,
+            guessCount: guessResponse,
+            userCount: userResponse,
         },
     };
 };
